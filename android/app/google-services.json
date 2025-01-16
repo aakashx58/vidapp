@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1002595282962",
+    "project_id": "vida-9599d",
+    "storage_bucket": "vida-9599d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1002595282962:android:967e70dca0025f0dc768cb",
+        "android_client_info": {
+          "package_name": "com.example.video_feed"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCp6oWe7On8rTD-5tYQ6Q3n9emhVI2xz1k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
