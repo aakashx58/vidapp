@@ -13,6 +13,7 @@ class TPrimaryButton extends StatelessWidget {
   final Color? textColor;
   final double height;
   final bool isMin;
+
   const TPrimaryButton({
     super.key,
     required this.label,
@@ -30,12 +31,14 @@ class TPrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Opacity(
-      opacity: (isBusy) ? 0.4 : 1,
+      opacity: isBusy ? 0.4 : 1,
       child: SizedBox(
         height: height,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
+            backgroundColor: isDisable
+                ? AppColors.grey500
+                : backgroundColor ?? AppColors.primary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(borderRadius ?? 8),
               side: BorderSide(
@@ -43,7 +46,7 @@ class TPrimaryButton extends StatelessWidget {
               ),
             ),
           ),
-          onPressed: (isDisable)
+          onPressed: isDisable
               ? null
               : isBusy
                   ? () {}
@@ -53,7 +56,7 @@ class TPrimaryButton extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: isMin ? MainAxisSize.min : MainAxisSize.max,
             children: [
-              if ((isBusy)) ...[
+              if (isBusy) ...[
                 const SizedBox(
                   height: 20,
                   width: 20,
