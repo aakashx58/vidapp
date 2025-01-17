@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:video_feed/common/extra/coming_soon.dart';
 import 'package:video_feed/common/utils/bottom_sheet_utils.dart';
 import 'package:video_feed/components/utils/fileshare_utils.dart';
+import 'package:video_feed/home/screens/add_video_screen.dart';
+import 'package:video_feed/home/screens/chat_screen.dart';
+import 'package:video_feed/home/screens/friends_screen.dart';
+import 'package:video_feed/styles/app_assets.dart';
 import 'package:video_feed/styles/app_colors.dart';
 import 'package:video_feed/home/screens/profile_screen.dart';
 import 'package:video_feed/common/constants/string_constants.dart';
@@ -26,10 +29,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final List<Widget> _screens = [
     const Center(
         child: Text("Home", style: TextStyle(color: AppColors.background))),
-    const Center(child: ComingSoonScreen()),
-    const Center(child: ComingSoonScreen()),
-    const Center(child: ComingSoonScreen()),
-    const Center(child: ProfileScreen()),
+    const Center(child: FriendsScreen()),
+    const Center(child: AddVideoScreen()),
+    const Center(child: ChatScreen()),
+    Center(child: ProfileScreen()),
   ];
 
   @override
@@ -153,11 +156,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         right: 20,
                         child: Column(
                           children: [
+                            const CircleAvatar(
+                              radius: 18,
+                              backgroundImage: AssetImage(AppAssets.person),
+                            ),
+                            const SizedBox(height: 10),
+                            IconButton(
+                              icon: const Icon(Icons.favorite,
+                                  color: AppColors.background, size: 30),
+                              onPressed: () {},
+                            ),
+                            const SizedBox(height: 10),
                             IconButton(
                               icon: const Icon(Icons.comment,
-                                  color: Colors.white, size: 30),
+                                  color: AppColors.background, size: 30),
                               onPressed: () {
-                                // Show comments sheet and load comments
                                 context
                                     .read<CommentsCubit>()
                                     .loadComments(videoUrls[index]);
@@ -170,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             const SizedBox(height: 10),
                             IconButton(
                               icon: const Icon(Icons.share,
-                                  color: Colors.white, size: 30),
+                                  color: AppColors.background, size: 30),
                               onPressed: () async {
                                 try {
                                   await FileSharingUtil.shareLocalFile(
@@ -204,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             label: "Friends",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add),
+            icon: Icon(Icons.camera),
             label: "Add",
           ),
           BottomNavigationBarItem(
