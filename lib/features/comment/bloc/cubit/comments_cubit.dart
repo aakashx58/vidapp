@@ -1,37 +1,39 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
+import 'package:video_feed/features/comment/model/comment_model.dart';
 
 part 'comments_state.dart';
 
 class CommentsCubit extends Cubit<CommentsState> {
-  // Map to store comments for each video
-  final Map<String, List<Map<String, String>>> _videoComments = {};
+  final Box<CommentModel> _commentsBox;
 
-  CommentsCubit() : super(CommentsInitial());
+  CommentsCubit(this._commentsBox) : super(CommentsInitial());
 
   void loadComments(String videoId) {
-    // Load existing comments for the specific videoId
-    final comments = _videoComments[videoId] ?? [];
-    emit(CommentsUpdated(comments));
+    // Load existing comments for the specific videoId from Hive
+    final comments = _commentsBox.values
+        .where((comment) => comment.videoId == videoId)
+        .toList();
+
+    emit(CommentsUpdated(comments)); // Emit the list of CommentModel directly
   }
 
   void addComment(String videoId, String username, String text) {
     // Create a new comment
-    final newComment = {
-      'username': username,
-      'text': text,
-      'avatar': '', // Placeholder for avatar URL
-      'time': 'Just now',
-    };
+    final newComment = CommentModel(
+      id: DateTime.now().millisecondsSinceEpoch.toString(), // Unique ID
+      videoId: videoId,
+      username: username,
+      text: text,
+      avatar: '', // Placeholder for avatar URL
+      timestamp: DateTime.now(),
+    );
 
-    // Add the new comment to the video comments list
-    if (_videoComments.containsKey(videoId)) {
-      _videoComments[videoId]!.insert(0, newComment);
-    } else {
-      _videoComments[videoId] = [newComment];
-    }
+    // Save the new comment to Hive
+    _commentsBox.add(newComment);
 
     // Emit the updated comments for that video
-    emit(CommentsUpdated(_videoComments[videoId]!));
+    loadComments(videoId);
   }
 }

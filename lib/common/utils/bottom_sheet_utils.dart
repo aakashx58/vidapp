@@ -1,8 +1,9 @@
-// ignore_for_file: dead_code
+// ignore_for_file: dead_code, unnecessary_null_comparison
 
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:video_feed/features/comment/bloc/cubit/comments_cubit.dart';
 import 'package:video_feed/features/comment/bot/comment_bot.dart';
 
@@ -21,7 +22,7 @@ class BottomSheetUtils {
         return BlocProvider.value(
           value: BlocProvider.of<CommentsCubit>(context)..loadComments(videoId),
           child: DraggableScrollableSheet(
-            initialChildSize: 0.9,
+            initialChildSize: 0.5,
             minChildSize: 0.5,
             maxChildSize: 0.9,
             expand: false,
@@ -49,12 +50,16 @@ class BottomSheetUtils {
                               final comment = state.comments[index];
                               return ListTile(
                                 leading: CircleAvatar(
-                                  backgroundImage:
-                                      NetworkImage(comment['avatar'] ?? ''),
+                                  backgroundImage: NetworkImage(comment.avatar),
                                 ),
-                                title: Text(comment['username'] ?? ''),
-                                subtitle: Text(comment['text'] ?? ''),
-                                trailing: Text(comment['time'] ?? ''),
+                                title: Text(comment.username),
+                                subtitle: Text(comment.text),
+                                trailing: Text(
+                                  comment.timestamp != null
+                                      ? DateFormat('yyyy-MM-dd – kk:mm')
+                                          .format(comment.timestamp)
+                                      : '',
+                                ),
                               );
                             },
                           );

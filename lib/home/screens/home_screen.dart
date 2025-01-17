@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:video_feed/common/extra/coming_soon.dart';
 import 'package:video_feed/common/utils/bottom_sheet_utils.dart';
 import 'package:video_feed/components/utils/fileshare_utils.dart';
 import 'package:video_feed/styles/app_colors.dart';
 import 'package:video_feed/home/screens/profile_screen.dart';
 import 'package:video_feed/common/constants/string_constants.dart';
 import 'package:video_player/video_player.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:video_feed/features/comment/bloc/cubit/comments_cubit.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,12 +26,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final List<Widget> _screens = [
     const Center(
         child: Text("Home", style: TextStyle(color: AppColors.background))),
-    const Center(
-        child: Text("Friends", style: TextStyle(color: AppColors.background))),
-    const Center(
-        child: Text("Add", style: TextStyle(color: AppColors.background))),
-    const Center(
-        child: Text("Chat", style: TextStyle(color: AppColors.background))),
+    const Center(child: ComingSoonScreen()),
+    const Center(child: ComingSoonScreen()),
+    const Center(child: ComingSoonScreen()),
     const Center(child: ProfileScreen()),
   ];
 
@@ -89,6 +89,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       setState(() {
         _currentIndex = index;
       });
+      // Play the video when switching back to the video tab
+      if (index == 0) {
+        _initializeAndPlay(_currentIndex);
+      }
     }
   }
 
@@ -153,6 +157,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               icon: const Icon(Icons.comment,
                                   color: Colors.white, size: 30),
                               onPressed: () {
+                                // Show comments sheet and load comments
+                                context
+                                    .read<CommentsCubit>()
+                                    .loadComments(videoUrls[index]);
                                 BottomSheetUtils.showCommentsSheet(
                                   context: context,
                                   videoId: videoUrls[index],
@@ -193,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.group),
-            label: "Search",
+            label: "Friends",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add),
@@ -201,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.chat),
-            label: "Notifications",
+            label: "Chat",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
