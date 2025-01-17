@@ -4,6 +4,10 @@ class AppAssets {
 
 //images
   static const logo = "${_basePng}logo.png";
+  static const person1 = "${_basePng}person1.png";
+  static const person2 = "${_basePng}person2.png";
+  static const person3 = "${_basePng}person3.png";
+  static const person4 = "${_basePng}person4.png";
 
   //videos
   static const image = "${_basePng}logo.png";

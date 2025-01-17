@@ -1,108 +1,109 @@
+// ignore_for_file: dead_code
+
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:video_feed/styles/app_colors.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:video_feed/features/comment/bloc/cubit/comments_cubit.dart';
+import 'package:video_feed/features/comment/bot/comment_bot.dart';
 
 class BottomSheetUtils {
-  static Future<void> showCommentsSheet({
+  static void showCommentsSheet({
     required BuildContext context,
-    required List<Map<String, String>> comments, // List of comments
-    required void Function(String)
-        onCommentSubmitted, // Callback for submitting comments
+    required String videoId,
   }) {
-    return showModalBottomSheet(
+    final commentController = TextEditingController();
+    Timer? _timer;
+
+    showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppColors.background,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(12),
-          topRight: Radius.circular(12),
-        ),
-      ),
-      builder: (context) {
-        final TextEditingController _commentController =
-            TextEditingController();
-
-        return DraggableScrollableSheet(
-          initialChildSize: 0.6,
-          minChildSize: 0.4,
-          maxChildSize: 0.9,
-          expand: false,
-          builder: (context, scrollController) {
-            return Column(
-              children: [
-                Container(
-                  width: 40,
-                  height: 5,
-                  margin: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.grey,
-                    borderRadius: BorderRadius.circular(10),
+      builder: (BuildContext context) {
+        return BlocProvider.value(
+          value: BlocProvider.of<CommentsCubit>(context)..loadComments(videoId),
+          child: DraggableScrollableSheet(
+            initialChildSize: 0.9,
+            minChildSize: 0.5,
+            maxChildSize: 0.9,
+            expand: false,
+            builder: (_, controller) {
+              return Column(
+                children: [
+                  AppBar(
+                    title: const Text('Comments'),
+                    leading: IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () {
+                        _timer?.cancel();
+                        Navigator.pop(context);
+                      },
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    controller: scrollController,
-                    itemCount: comments.length,
-                    itemBuilder: (context, index) {
-                      final comment = comments[index];
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage:
-                              NetworkImage(comment['avatar'] ?? ''),
-                        ),
-                        title: Text(
-                          comment['username'] ?? '',
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        subtitle: Text(
-                          comment['text'] ?? '',
-                          style: const TextStyle(color: Colors.grey),
-                        ),
-                        trailing: Text(
-                          comment['time'] ?? '',
-                          style:
-                              const TextStyle(color: Colors.grey, fontSize: 12),
-                        ),
-                      );
-                    },
+                  Expanded(
+                    child: BlocBuilder<CommentsCubit, CommentsState>(
+                      builder: (context, state) {
+                        if (state is CommentsUpdated) {
+                          return ListView.builder(
+                            controller: controller,
+                            itemCount: state.comments.length,
+                            itemBuilder: (context, index) {
+                              final comment = state.comments[index];
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(comment['avatar'] ?? ''),
+                                ),
+                                title: Text(comment['username'] ?? ''),
+                                subtitle: Text(comment['text'] ?? ''),
+                                trailing: Text(comment['time'] ?? ''),
+                              );
+                            },
+                          );
+                        }
+                        return const Center(child: CircularProgressIndicator());
+                      },
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _commentController,
-                          style: const TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            hintText: 'Add a comment...',
-                            hintStyle: const TextStyle(color: Colors.grey),
-                            filled: true,
-                            fillColor: AppColors.greycontainer,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25),
-                              borderSide: BorderSide.none,
+                  Padding(
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                      left: 8,
+                      right: 8,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: commentController,
+                            decoration: const InputDecoration(
+                              hintText: 'Add a comment...',
                             ),
+                            onChanged: (text) {
+                              _timer?.cancel();
+                            },
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      IconButton(
-                        icon: const Icon(Icons.send, color: AppColors.primary),
-                        onPressed: () {
-                          if (_commentController.text.trim().isNotEmpty) {
-                            onCommentSubmitted(_commentController.text.trim());
-                            _commentController.clear();
-                          }
-                        },
-                      ),
-                    ],
+                        IconButton(
+                          icon: const Icon(Icons.send),
+                          onPressed: () {
+                            if (commentController.text.isNotEmpty) {
+                              context.read<CommentsCubit>().addComment(
+                                  videoId, 'You', commentController.text);
+
+                              commentController.clear();
+
+                              _timer?.cancel();
+
+                              CommentBot.startCommentBot(context, videoId);
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         );
       },
     );
