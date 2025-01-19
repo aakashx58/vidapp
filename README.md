@@ -138,8 +138,7 @@ The app uses the following for video integration:
 ---
 
 ## 💻 Usage Preview
-(Provide a GIF or video preview of the app in action for users to see how it works.)
-
+### [Click Here to Watch Video](https://drive.google.com/drive/folders/1Xd1_BjlkOxlrAnJrGhJW8AjOKkKuiZ2D?usp=sharing)
 ---
 
 ### [Download App Here](https://drive.google.com/drive/folders/10f0-6Cn3JMk2qvbmSWbTWSuOLnub29Ip?usp=drive_link)
