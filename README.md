@@ -153,7 +153,7 @@ The app uses the following for video integration:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/aakashx58/video-feed-app.git
+   git clone https://github.com/aakashx58/vidapp.git
    ```
 2. Navigate to the project directory:
    ```bash
