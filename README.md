@@ -157,7 +157,7 @@ The app uses the following for video integration:
    ```
 2. Navigate to the project directory:
    ```bash
-   cd video-feed-app
+   cd vidapp
    ```
 3. Install dependencies:
    ```bash
